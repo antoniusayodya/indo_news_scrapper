@@ -8,11 +8,15 @@ import scrape_link
 ##Function for scrapping content from link
 def content(url):
     news_url = url
+    content_title = []
     content_data = []
+    content_pubdate = []
+    content_link =[]
     excl = ['/foto', '/infografik', '/video']
     linkss = [link for link in news_url if not any(pattern in link for pattern in excl)]
     for links in linkss:
         r = requests.get(links)
+        print(links)
         soup = BeautifulSoup(r.content, "html.parser")
         title = soup.find("title")
         content = soup.find("div", class_ = "post-content clearfix")
@@ -33,17 +37,19 @@ def content(url):
             for br in content.find_all('br'):
                 br.replace_with('\n')
         content.text.replace('Baca Juga', '').strip()
-        content_data.append(title.text)
+        content_title.append(title.text)
         content_data.append(content.text)
-        content_data.append(pubDate)
-        content_data.append(links)
-        df = pd.DataFrame(content_data)
-        df.to_csv("content.csv")
+        content_pubdate.append(pubDate)
+        content_link.append(links)
+        df = pd.DataFrame({"Title": content_title, "Tanggal Rilis": content_pubdate, "Text Berita": content_data, "Link": content_link })
+        df.to_csv("content_rungkad.csv")
     return df
 
 ##urlnya dipakai untuk directory news sitenya
 url_list = pd.read_csv("list_page.csv")["link"].tolist()
 url = [string + '/' for string in url_list]
+
+
 ##function dari awal sampai akhir
 def scrap_antara():
     scrap_link = scrape_link.list_url(url)
