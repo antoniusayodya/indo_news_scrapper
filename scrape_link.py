@@ -37,6 +37,3 @@ def news_link_scrapper(url_list):
           df_link.to_csv('link_database.csv')
      return news_link
 
-nav = list_url(url)
-cont = news_link_scrapper(nav)
-print(cont)

@@ -7,16 +7,22 @@ import scrape_link
 
 ##Function for scrapping content from link
 def content(url):
-    link = url
-    for links in link:
+    news_url = url
+    content_data = []
+    excl = ['/foto', '/infografik', '/video']
+    linkss = [link for link in news_url if not any(pattern in link for pattern in excl)]
+    for links in linkss:
         r = requests.get(links)
         soup = BeautifulSoup(r.content, "html.parser")
         title = soup.find("title")
         content = soup.find("div", class_ = "post-content clearfix")
-        ##pubDate = soup.find ("meta", {'property': 'article:published_time'} )['content']
+        pubmeta = soup.find ("meta", {"property": "article:published_time"})
+        if pubmeta and "content" in pubmeta.attrs :
+            pubDate = soup.find ("meta", {"property": "article:published_time"})["content"]
+        else:
+            pubDate = "null"
         title = soup.find("title")
         content = soup.find("div", class_ = "post-content clearfix")
-        pubDate = soup.find ("meta", {'property': 'article:published_time'} )['content']
         content.text.replace('</b><span>', '').strip()
         if content:
             ##re.sub(r'\b{}\b'.format(re.escape('Baca Juga')), '', content.text, flags=re.IGNORECASE)
@@ -27,13 +33,17 @@ def content(url):
             for br in content.find_all('br'):
                 br.replace_with('\n')
         content.text.replace('Baca Juga', '').strip()
-        df = pd.DataFrame({"title": [title.text], "content": [content.text], "publish_date": [pubDate], "link": [url]})
+        content_data.append(title.text)
+        content_data.append(content.text)
+        content_data.append(pubDate)
+        content_data.append(links)
+        df = pd.DataFrame(content_data)
         df.to_csv("content.csv")
-        return content
+    return df
 
 ##urlnya dipakai untuk directory news sitenya
-url = ("https://antaranews.com/terkini/", "https://antaranews.com/politik/", "https://antaranews.com/hukum/", "https://antaranews.com/ekonomi/", "https://antaranews.com/metro/", "https://antaranews.com/sepakbola/", "https://antaranews.com/olahraga/", "https://antaranews.com/humaniora/", "https://antaranews.com/lifestyle/", "https://antaranews.com/hiburan/")
-
+url_list = pd.read_csv("list_page.csv")["link"].tolist()
+url = [string + '/' for string in url_list]
 ##function dari awal sampai akhir
 def scrap_antara():
     scrap_link = scrape_link.list_url(url)
