@@ -4,7 +4,7 @@ import pandas as pd
 import csv
 
 
-url = ("https://antaranews.com/terkini/", "https://antaranews.com/politik/")
+##url = ("https://antaranews.com/terkini/", "https://antaranews.com/politik/")
 
 ##For making list of pages you want to scrap the headline from
 def list_url(url):
