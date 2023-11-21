@@ -17,7 +17,7 @@ def list_url(url):
                 url_list.append(urlpage)
                 ##url_flat_list = [url for sublist in url_list for url in sublist]
         df_url = pd.DataFrame(url_list)
-    df_url.to_csv("url_list.csv")
+    df_url.to_csv("url_NTB.csv")
     return url_list
 
 ##For making list of the news you want to take the content from
@@ -33,7 +33,8 @@ def news_link_scrapper(url_list):
                for headline_tag in headline:
                 headline_news = headline_tag['href']
                 news_link.append(headline_news)
-                df_link = pd.DataFrame(news_link)
-          df_link.to_csv('link_database.csv')
-     return news_link
+                news_link_cln = (list(set(news_link)))
+                df_link = pd.DataFrame(news_link_cln)
+          df_link.to_csv('link_list.csv')
+     return news_link_cln
 
