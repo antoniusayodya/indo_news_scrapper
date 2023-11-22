@@ -24,15 +24,13 @@ def content(url):
             pubDate = soup.find ("meta", {"property": "article:published_time"})["content"]
         else:
             pubDate = "null"
-        title = soup.find("title")
-        content = soup.find("div", class_ = "post-content clearfix")
         content.text.replace('</b><span>', '').strip()
         if content:
             ##re.sub(r'\b{}\b'.format(re.escape('Baca Juga')), '', content.text, flags=re.IGNORECASE)
             for a in content.find_all('a'):
                 a.replace_with(' ')
             for b in content.find_all('/b'):
-                a.replace_with(' ')
+                b.replace_with(' ')
             for br in content.find_all('br'):
                 br.replace_with('\n')
         content.text.replace('Baca Juga:', '').strip()

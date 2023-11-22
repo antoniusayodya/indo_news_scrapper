@@ -5,7 +5,7 @@ import pandas as pd
 import csv
 import scrape_link
 
-url = pd.read_csv("link_database4.csv")["0"]
+url = pd.read_csv("dibuangsayang.csv")["0"]
 
 news_url = url
 content_title = []
@@ -18,26 +18,26 @@ for links in linkss:
     r = requests.get(links)
     soup = BeautifulSoup(r.content, "html.parser")
     title = soup.find("title")
-    content = soup.find("div", class_ = "post-content clearfix")
+    content = soup.find("div", class_ = "post-content")
+    text_news = ""
     pubmeta = soup.find ("meta", {"property": "article:published_time"})
     if pubmeta and "content" in pubmeta.attrs :
         pubDate = soup.find ("meta", {"property": "article:published_time"})["content"]
     else:
         pubDate = "null"
-        title = soup.find("title")
-        content = soup.find("div", class_ = "post-content clearfix")
         content.text.replace('</b><span>', '').strip()
     if content:
         for a in content.find_all('a'):
             a.replace_with('')
         for b in content.find_all('/b'):
-            a.replace_with('')
+            b.replace_with('')
         for br in content.find_all('br'):
             br.replace_with('\n')
-    content.text.replace('Baca Juga:', '').strip()
+    text_news = content.get_text(strip=True)
+    text_news.replace('Baca Juga:', '').strip()
     content_title.append(title.text)
-    content_data.append(content.text)
+    content_data.append(text_news)
     content_pubdate.append(pubDate)
     content_link.append(links)
     df = pd.DataFrame({"Title": content_title, "Tanggal Rilis": content_pubdate, "Text Berita": content_data, "Link": content_link })
-    df.to_csv("content4.csv")
+    df.to_csv("content_list.csv")
